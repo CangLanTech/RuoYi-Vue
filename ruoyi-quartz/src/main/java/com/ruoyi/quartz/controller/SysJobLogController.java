@@ -28,8 +28,11 @@ import com.ruoyi.quartz.service.ISysJobLogService;
 @RequestMapping("/monitor/jobLog")
 public class SysJobLogController extends BaseController
 {
-    @Autowired
-    private ISysJobLogService jobLogService;
+    private final ISysJobLogService jobLogService;
+
+    public SysJobLogController(ISysJobLogService jobLogService) {
+        this.jobLogService = jobLogService;
+    }
 
     /**
      * 查询定时任务调度日志列表
@@ -52,7 +55,7 @@ public class SysJobLogController extends BaseController
     public void export(HttpServletResponse response, SysJobLog sysJobLog)
     {
         List<SysJobLog> list = jobLogService.selectJobLogList(sysJobLog);
-        ExcelUtil<SysJobLog> util = new ExcelUtil<SysJobLog>(SysJobLog.class);
+        ExcelUtil<SysJobLog> util = new ExcelUtil<>(SysJobLog.class);
         util.exportExcel(response, list, "调度日志");
     }
     

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,11 +44,15 @@ import com.ruoyi.generator.service.IGenTableService;
 @RequestMapping("/tool/gen")
 public class GenController extends BaseController
 {
-    @Autowired
-    private IGenTableService genTableService;
+    private final IGenTableService genTableService;
 
-    @Autowired
-    private IGenTableColumnService genTableColumnService;
+    private final IGenTableColumnService genTableColumnService;
+
+    public GenController(@Qualifier("genTableService") IGenTableService genTableService,
+                         @Qualifier("genTableColumnService") IGenTableColumnService genTableColumnService) {
+        this.genTableService = genTableService;
+        this.genTableColumnService = genTableColumnService;
+    }
 
     /**
      * 查询代码生成列表
@@ -72,7 +76,7 @@ public class GenController extends BaseController
         GenTable table = genTableService.selectGenTableById(tableId);
         List<GenTable> tables = genTableService.selectGenTableAll();
         List<GenTableColumn> list = genTableColumnService.selectGenTableColumnListByTableId(tableId);
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("info", table);
         map.put("rows", list);
         map.put("tables", tables);
@@ -96,7 +100,7 @@ public class GenController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('tool:gen:list')")
     @GetMapping(value = "/column/{tableId}")
-    public TableDataInfo columnList(Long tableId)
+    public TableDataInfo columnList(@PathVariable("tableId") Long tableId)
     {
         TableDataInfo dataInfo = new TableDataInfo();
         List<GenTableColumn> list = genTableColumnService.selectGenTableColumnListByTableId(tableId);
@@ -145,7 +149,7 @@ public class GenController extends BaseController
                     }
                 }
             }
-            List<GenTable> tableList = genTableService.selectDbTableListByNames(tableNames.toArray(new String[tableNames.size()]));
+            List<GenTable> tableList = genTableService.selectDbTableListByNames(tableNames.toArray(new String[0]));
             String operName = SecurityUtils.getUsername();
             genTableService.importGenTable(tableList, operName);
             return AjaxResult.success();
@@ -187,7 +191,7 @@ public class GenController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('tool:gen:preview')")
     @GetMapping("/preview/{tableId}")
-    public AjaxResult preview(@PathVariable("tableId") Long tableId) throws IOException
+    public AjaxResult preview(@PathVariable("tableId") Long tableId)
     {
         Map<String, String> dataMap = genTableService.previewCode(tableId);
         return success(dataMap);

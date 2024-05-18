@@ -2,7 +2,6 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,8 +30,11 @@ import com.ruoyi.system.service.ISysPostService;
 @RequestMapping("/system/post")
 public class SysPostController extends BaseController
 {
-    @Autowired
-    private ISysPostService postService;
+    private final ISysPostService postService;
+
+    public SysPostController(ISysPostService postService) {
+        this.postService = postService;
+    }
 
     /**
      * 获取岗位列表
@@ -52,7 +54,7 @@ public class SysPostController extends BaseController
     public void export(HttpServletResponse response, SysPost post)
     {
         List<SysPost> list = postService.selectPostList(post);
-        ExcelUtil<SysPost> util = new ExcelUtil<SysPost>(SysPost.class);
+        ExcelUtil<SysPost> util = new ExcelUtil<>(SysPost.class);
         util.exportExcel(response, list, "岗位数据");
     }
 

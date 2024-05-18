@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.system;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.config.RuoYiConfig;
@@ -15,8 +14,11 @@ import com.ruoyi.common.utils.StringUtils;
 public class SysIndexController
 {
     /** 系统基础配置 */
-    @Autowired
-    private RuoYiConfig ruoyiConfig;
+    private final RuoYiConfig ruoyiConfig;
+
+    public SysIndexController(RuoYiConfig ruoyiConfig) {
+        this.ruoyiConfig = ruoyiConfig;
+    }
 
     /**
      * 访问首页，提示语

@@ -1,7 +1,6 @@
 package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,20 +36,23 @@ import com.ruoyi.system.service.ISysUserService;
 @Component
 public class SysLoginService
 {
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
     @Resource
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private RedisCache redisCache;
+    private final RedisCache redisCache;
     
-    @Autowired
-    private ISysUserService userService;
+    private final ISysUserService userService;
 
-    @Autowired
-    private ISysConfigService configService;
+    private final ISysConfigService configService;
+
+    public SysLoginService(TokenService tokenService, RedisCache redisCache, ISysUserService userService, ISysConfigService configService) {
+        this.tokenService = tokenService;
+        this.redisCache = redisCache;
+        this.userService = userService;
+        this.configService = configService;
+    }
 
     /**
      * 登录验证
@@ -68,7 +70,7 @@ public class SysLoginService
         // 登录前置校验
         loginPreCheck(username, password);
         // 用户验证
-        Authentication authentication = null;
+        Authentication authentication;
         try
         {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
@@ -106,7 +108,6 @@ public class SysLoginService
      * @param username 用户名
      * @param code 验证码
      * @param uuid 唯一标识
-     * @return 结果
      */
     public void validateCaptcha(String username, String code, String uuid)
     {

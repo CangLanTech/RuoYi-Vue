@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.annotation.DataScope;
@@ -33,17 +32,20 @@ import com.ruoyi.system.service.ISysRoleService;
 @Service
 public class SysRoleServiceImpl implements ISysRoleService
 {
-    @Autowired
-    private SysRoleMapper roleMapper;
+    private final SysRoleMapper roleMapper;
 
-    @Autowired
-    private SysRoleMenuMapper roleMenuMapper;
+    private final SysRoleMenuMapper roleMenuMapper;
 
-    @Autowired
-    private SysUserRoleMapper userRoleMapper;
+    private final SysUserRoleMapper userRoleMapper;
 
-    @Autowired
-    private SysRoleDeptMapper roleDeptMapper;
+    private final SysRoleDeptMapper roleDeptMapper;
+
+    public SysRoleServiceImpl(SysRoleMapper roleMapper, SysRoleMenuMapper roleMenuMapper, SysUserRoleMapper userRoleMapper, SysRoleDeptMapper roleDeptMapper) {
+        this.roleMapper = roleMapper;
+        this.roleMenuMapper = roleMenuMapper;
+        this.userRoleMapper = userRoleMapper;
+        this.roleDeptMapper = roleDeptMapper;
+    }
 
     /**
      * 根据条件分页查询角色数据
@@ -292,7 +294,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     {
         int rows = 1;
         // 新增用户与角色管理
-        List<SysRoleMenu> list = new ArrayList<SysRoleMenu>();
+        List<SysRoleMenu> list = new ArrayList<>();
         for (Long menuId : role.getMenuIds())
         {
             SysRoleMenu rm = new SysRoleMenu();
@@ -316,7 +318,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     {
         int rows = 1;
         // 新增角色与部门（数据权限）管理
-        List<SysRoleDept> list = new ArrayList<SysRoleDept>();
+        List<SysRoleDept> list = new ArrayList<>();
         for (Long deptId : role.getDeptIds())
         {
             SysRoleDept rd = new SysRoleDept();
@@ -411,7 +413,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     public int insertAuthUsers(Long roleId, Long[] userIds)
     {
         // 新增用户与角色管理
-        List<SysUserRole> list = new ArrayList<SysUserRole>();
+        List<SysUserRole> list = new ArrayList<>();
         for (Long userId : userIds)
         {
             SysUserRole ur = new SysUserRole();

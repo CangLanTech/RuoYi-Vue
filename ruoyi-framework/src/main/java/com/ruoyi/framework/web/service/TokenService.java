@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
@@ -51,8 +50,11 @@ public class TokenService
 
     private static final Long MILLIS_MINUTE_TEN = 20 * 60 * 1000L;
 
-    @Autowired
-    private RedisCache redisCache;
+    private final RedisCache redisCache;
+
+    public TokenService(RedisCache redisCache) {
+        this.redisCache = redisCache;
+    }
 
     /**
      * 获取用户身份信息
@@ -71,8 +73,7 @@ public class TokenService
                 // 解析对应的权限以及用户信息
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
                 String userKey = getTokenKey(uuid);
-                LoginUser user = redisCache.getCacheObject(userKey);
-                return user;
+                return redisCache.getCacheObject(userKey);
             }
             catch (Exception e)
             {
@@ -126,8 +127,7 @@ public class TokenService
     /**
      * 验证令牌有效期，相差不足20分钟，自动刷新缓存
      *
-     * @param loginUser
-     * @return 令牌
+     * @param loginUser 登录信息
      */
     public void verifyToken(LoginUser loginUser)
     {
@@ -176,10 +176,9 @@ public class TokenService
      */
     private String createToken(Map<String, Object> claims)
     {
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
-        return token;
     }
 
     /**
@@ -211,7 +210,6 @@ public class TokenService
     /**
      * 获取请求token
      *
-     * @param request
      * @return token
      */
     private String getToken(HttpServletRequest request)

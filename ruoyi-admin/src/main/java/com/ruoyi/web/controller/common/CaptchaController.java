@@ -2,11 +2,10 @@ package com.ruoyi.web.controller.common;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,16 +33,20 @@ public class CaptchaController
     @Resource(name = "captchaProducerMath")
     private Producer captchaProducerMath;
 
-    @Autowired
-    private RedisCache redisCache;
+    private final RedisCache redisCache;
     
-    @Autowired
-    private ISysConfigService configService;
+    private final ISysConfigService configService;
+
+    public CaptchaController(RedisCache redisCache, ISysConfigService configService) {
+        this.redisCache = redisCache;
+        this.configService = configService;
+    }
+
     /**
      * 生成验证码
      */
     @GetMapping("/captchaImage")
-    public AjaxResult getCode(HttpServletResponse response) throws IOException
+    public AjaxResult getCode()
     {
         AjaxResult ajax = AjaxResult.success();
         boolean captchaEnabled = configService.selectCaptchaEnabled();
@@ -57,7 +60,8 @@ public class CaptchaController
         String uuid = IdUtils.simpleUUID();
         String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
 
-        String capStr = null, code = null;
+        String capStr;
+        String code = null;
         BufferedImage image = null;
 
         // 生成验证码
@@ -80,7 +84,7 @@ public class CaptchaController
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         try
         {
-            ImageIO.write(image, "jpg", os);
+            ImageIO.write(Objects.requireNonNull(image), "jpg", os);
         }
         catch (IOException e)
         {

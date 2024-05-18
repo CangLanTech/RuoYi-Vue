@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,8 +29,11 @@ import com.ruoyi.system.service.ISysMenuService;
 @RequestMapping("/system/menu")
 public class SysMenuController extends BaseController
 {
-    @Autowired
-    private ISysMenuService menuService;
+    private final ISysMenuService menuService;
+
+    public SysMenuController(ISysMenuService menuService) {
+        this.menuService = menuService;
+    }
 
     /**
      * 获取菜单列表

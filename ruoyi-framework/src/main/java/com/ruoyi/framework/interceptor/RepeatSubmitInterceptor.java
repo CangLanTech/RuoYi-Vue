@@ -20,7 +20,7 @@ import com.ruoyi.common.utils.ServletUtils;
 public abstract class RepeatSubmitInterceptor implements HandlerInterceptor
 {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
     {
         if (handler instanceof HandlerMethod)
         {
@@ -36,12 +36,8 @@ public abstract class RepeatSubmitInterceptor implements HandlerInterceptor
                     return false;
                 }
             }
-            return true;
         }
-        else
-        {
-            return true;
-        }
+        return true;
     }
 
     /**
@@ -50,7 +46,6 @@ public abstract class RepeatSubmitInterceptor implements HandlerInterceptor
      * @param request 请求信息
      * @param annotation 防重复注解参数
      * @return 结果
-     * @throws Exception
      */
     public abstract boolean isRepeatSubmit(HttpServletRequest request, RepeatSubmit annotation);
 }
